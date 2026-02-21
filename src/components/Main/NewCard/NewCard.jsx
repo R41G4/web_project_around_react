@@ -1,42 +1,87 @@
-const NewCard = () =>
-{
-	return (
-		<form
-			className="popup__form"
-			name="card-form"
-			id="new-card-form"
-			noValidate
-		>
-			<label className="popup__field">
-				<input
-					className="popup__input popup__input_type_card-name"
-					id="card-name"
-					maxLength="30"
-					minLength="1"
-					name="card-name"
-					placeholder="Title"
-					required
-					type="text"
-				/>
-				<span className="popup__error" id="card-name-error"></span>
-			</label>
-			<label className="popup__field">
-				<input
-					className="popup__input popup__input_type_url"
-					id="card-link"
-					name="link"
-					placeholder="Image link"
-					required
-					type="url"
-				/>
-				<span className="popup__error" id="card-link-error"></span>
-			</label>
+// components/Main/Form/NewCard/NewCard.jsx
+import { useState, useEffect } from "react";
+import { isValidUrl } from "../../../utils/validators";
 
-			<button className="button popup__button" type="submit">
-				Guardar
-			</button>
-		</form>
-	);
+function NewCard({ onTitleChange, onLinkChange, onValidationChange }) {
+    const [title, setTitle] = useState("");
+    const [link, setLink] = useState("");
+    const [titleError, setTitleError] = useState({ show: false, message: '' });
+    const [linkError, setLinkError] = useState({ show: false, message: '' });
+
+    // Validar cuando cambian los valores
+    useEffect(() => {
+        // Validar título
+        if (title.trim() === "") {
+            setTitleError({ show: true, message: 'Campo requerido' });
+        } else if (title.length < 3) {
+            setTitleError({ show: true, message: 'Mínimo 3 carácter' });
+        } else if (title.length > 30) {
+            setTitleError({ show: true, message: 'Máximo 30 caracteres' });
+        } else {
+            setTitleError({ show: false, message: '' });
+        }
+
+        // Validar link
+        if (link.trim() === "") {
+            setLinkError({ show: true, message: 'Campo requerido' });
+        } else if (!isValidUrl(link)) {
+            setLinkError({ show: true, message: 'URL no válida' });
+        } else {
+            setLinkError({ show: false, message: '' });
+        }
+
+        // Validar formulario completo
+        const titleValid = title.trim() !== "" && title.length >= 1 && title.length <= 30;
+        const linkValid = link.trim() !== "" && isValidUrl(link);
+        const formValid = titleValid && linkValid;
+        
+        onValidationChange?.(formValid);
+    }, [title, link, onValidationChange]);
+
+    const handleTitleChange = (e) => {
+        const newTitle = e.target.value;
+        setTitle(newTitle);
+        onTitleChange?.(e);
+    };
+
+    const handleLinkChange = (e) => {
+        const newLink = e.target.value;
+        setLink(newLink);
+        onLinkChange?.(e);
+    };
+
+    return (
+        <>
+            <div className="popup__input-container">
+                <input
+                    className={`popup__input popup__input_type_card-name ${titleError.show ? 'popup__input_type_error' : ''}`}
+                    placeholder="Título"
+                    type="text"
+                    value={title}
+                    onChange={handleTitleChange}
+                    minLength="1"
+                    maxLength="30"
+                    required
+                />
+                <span className={`popup__error ${titleError.show ? 'popup__error_visible' : ''}`}>
+                    {titleError.message}
+                </span>
+            </div>
+            <div className="popup__input-container">
+                <input
+                    className={`popup__input popup__input_type_url ${linkError.show ? 'popup__input_type_error' : ''}`}
+                    placeholder="Enlace a la imagen"
+                    type="url"
+                    value={link}
+                    onChange={handleLinkChange}
+                    required
+                />
+                <span className={`popup__error ${linkError.show ? 'popup__error_visible' : ''}`}>
+                    {linkError.message}
+                </span>
+            </div>
+        </>
+    );
 }
 
-export default NewCard
+export default NewCard;

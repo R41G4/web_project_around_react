@@ -1,36 +1,42 @@
-import ImagePopup from "../ImagePopup/ImagePopup";
+// components/Main/Card/Card.jsx
+import { useState } from "react";
 
-const Card = (props) => {
-	const { name, link, isLiked } = props.card;
+function Card({ card, onImageClick, onDeleteClick }) {
+    const [isLiked, setIsLiked] = useState(false);
 
-	const imageComponent = {
-        title: null,
-        children: <img src={link} alt={name} className="popup__image" />
+    const handleLikeClick = () => {
+        setIsLiked(!isLiked);
+        // Aquí después iría la lógica para guardar el like en el servidor
     };
-	
-	return (
-	<li className="card">
-		<img 
-			className="card__image" 
-			src={link} 
-			alt={name}
-			onClick={() => props.handleOpenPopup(imageComponent)}
-		/>
-		<button
-			aria-label="Delete card"
-			className="card__delete-button"
-			type="button"
-		/>
-		<div className="card__description">
-			<h2 className="card__title">{name}</h2>
-			<button
-			aria-label="Like card"
-			type="button"
-			className="card__like-button"
-			/>
-		</div>
-    </li>
-	);
-};
+
+    return (
+        <li className="card">
+            <img 
+                className="card__image" 
+                src={card.link} 
+                alt={card.name}
+                onClick={onImageClick}
+            />
+            <button 
+                aria-label="Eliminar tarjeta" 
+                className="card__delete-button" 
+                type="button"
+                onClick={onDeleteClick}
+            />
+            <div className="card__description">
+                <h2 className="card__title">{card.name}</h2>
+                <div className="card__like-container">
+                    <button 
+                        aria-label="Me gusta" 
+                        className={`card__like-button ${isLiked ? "card__like-button_is-active" : ""}`}
+                        type="button"
+                        onClick={handleLikeClick}
+                    />
+                    {/* Contador eliminado */}
+                </div>
+            </div>
+        </li>
+    );
+}
 
 export default Card;

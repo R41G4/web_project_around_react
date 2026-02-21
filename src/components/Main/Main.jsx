@@ -1,106 +1,250 @@
 import { useState } from "react";
 
+import Profile from "./Profile/Profile";
+import Card from "./Card/Card";
+import ImagePopup from "./ImagePopup/ImagePopup";
+import Form from "./Form/Form";
 import Popup from "./Popup/Popup";
 import NewCard from "./NewCard/NewCard";
-import Card from "./Card/Card";
+import RemoveCard from "./RemoveCard/RemoveCard";
+import EditProfile from "./Form/EditProfile/EditProfile";
+import EditAvatar from "./Form/EditAvatar/EditAvatar";
 
-const cards = [
-	{
-		isLiked: false,
-		_id: '5d1f0611d321eb4bdcd707dd',
-		name: 'Yosemite Valley',
-		link: 'https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg',
-		owner: '5d1f0611d321eb4bdcd707dd',
-		createdAt: '2019-07-05T08:10:57.741Z',
-	},
-	{
-		isLiked: false,
-		_id: '5d1f064ed321eb4bdcd707de',
-		name: 'Lake Louise',
-		link: 'https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg',
-		owner: '5d1f0611d321eb4bdcd707dd',
-		createdAt: '2019-07-05T08:11:58.324Z',
-	},
-];
-console.log(cards);
 
-const Main = () =>
-{
-	const [popup, setPopup] = useState(null);
+const Main = () => {
+    // ===== ESTADO DE USUARIO =====
+    const [currentUser, setCurrentUser] = useState({
+        name: "Luis García",
+        about: "Explorador",
+        avatar: "./images/avatar.jpg",
+        _id: "5d1f0611d321eb4bdcd707dd"
+    });
 
-	function handleOpenPopup(popup)
-	{
-		setPopup(popup);
-	}
+    // ===== ESTADO DE TARJETAS =====
+    const [cards, setCards] = useState([
+        {
+            _id: "5d1f0611d321eb4bdcd707dd",
+            name: "Yosemite Valley",
+            link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
+            owner: "5d1f0611d321eb4bdcd707dd"
+        },
+        {
+            _id: "5d1f064ed321eb4bdcd707de",
+            name: "Lake Louise",
+            link: "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_lake-louise.jpg",
+            owner: "5d1f0611d321eb4bdcd707dd"
+        }
+    ]);
 
-	function handleClosePopup()
-	{
-		setPopup(null);
-	}
+    // ===== ESTADO PARA IMAGEN =====
+    const [selectedImage, setSelectedImage] = useState(null);
 
-	const newCardPopup = {
-		title: "Nuevo lugar", children: <NewCard />,
-		isOpen: true
-	};
+    // ===== ESTADO PARA POPUPS =====
+    const [activePopup, setActivePopup] = useState(null); // 'newCard', 'editProfile', 'editAvatar', 'removeCard', 'image'
+    const [cardToRemove, setCardToRemove] = useState(null);
 
-	return (
-		<main className="content">
-			<section className="profile page__section">
-				<div className="profile__avatar-container">
-					<img 
-						className="profile__image" 
-						src="./images/avatar.jpg" 
-						alt="Avatar de Luis García" 
-					/>
-					<button 
-						aria-label="Cambiar foto de perfil" 
-						className="profile__avatar-edit-button" 
-						type="button"
-					></button>
-				</div>
-				<div className="profile__info">
-					<h1 className="profile__title">Luis García</h1>
-					<button 
-						aria-label="Editar perfil" 
-						className="profile__edit-button" 
-						type="button"
-					></button>
-					<p className="profile__description">Explorador</p>
-				</div>
-				<button
-					aria-label="Agregar tarjeta" 
-					className="profile__add-button" 
-					type="button"
-					onClick={() => handleOpenPopup(newCardPopup)}
-				></button>
-			</section>
-			<section className="cards page__section">
-				<ul className="cards__list">
-				{
-					cards.map((card) => (
-						<Card 
-							key={card._id} 
-							card={card} 
-							onImageClick={handleOpenPopup}
-						/>
-					))
-				}
-				</ul>
-			</section>
+    // ===== ESTADO PARA FORMULARIOS =====
+    const [newCardTitle, setNewCardTitle] = useState("");
+    const [newCardLink, setNewCardLink] = useState("");
+    const [isNewCardValid, setIsNewCardValid] = useState(false);
 
-			{
-				popup && (
-					<Popup
-						onClose={handleClosePopup}
-						title={popup.title}
-						isOpen={popup.isOpen}
-					>
-						{popup.children}
-					</Popup>
-				)
-			}
-		</main>
-	)
-}
+    const [editName, setEditName] = useState(currentUser.name);
+    const [editAbout, setEditAbout] = useState(currentUser.about);
+    const [isEditProfileValid, setIsEditProfileValid] = useState(false);
 
-export default Main
+    const [editAvatar, setEditAvatar] = useState(currentUser.avatar);
+    const [isEditAvatarValid, setIsEditAvatarValid] = useState(false);
+
+    // ===== HANDLERS DE APERTURA =====
+    const handleImageClick = (image) => {
+        setSelectedImage(image);
+        setActivePopup('image');
+    };
+
+    const handleAddCardClick = () => {
+        setNewCardTitle("");
+        setNewCardLink("");
+        setIsNewCardValid(false);
+        setActivePopup('newCard');
+    };
+
+    const handleEditProfileClick = () => {
+        setEditName(currentUser.name);
+        setEditAbout(currentUser.about);
+        setIsEditProfileValid(true);
+        setActivePopup('editProfile');
+    };
+
+    const handleEditAvatarClick = () => {
+        setEditAvatar(currentUser.avatar);
+        setIsEditAvatarValid(false);
+        setActivePopup('editAvatar');
+    };
+
+    const handleDeleteClick = (card) => {
+        setCardToRemove(card);
+        setActivePopup('removeCard');
+    };
+
+    // ===== HANDLER DE CIERRE =====
+    const closeAllPopups = () => {
+        setActivePopup(null);
+        setSelectedImage(null);
+        setCardToRemove(null);
+        setNewCardTitle("");
+        setNewCardLink("");
+        setIsNewCardValid(false);
+    };
+
+    // ===== HANDLERS DE ENVÍO =====
+    const handleNewCardSubmit = (e) => {
+        e.preventDefault();
+        if (!isNewCardValid) return;
+        
+        const newCard = {
+            _id: Date.now().toString(),
+            name: newCardTitle,
+            link: newCardLink,
+            owner: currentUser._id
+        };
+
+        setCards([newCard, ...cards]);
+        closeAllPopups();
+    };
+
+    const handleEditProfileSubmit = (e) => {
+        e.preventDefault();
+        if (!isEditProfileValid) return;
+        
+        setCurrentUser({
+            ...currentUser,
+            name: editName,
+            about: editAbout
+        });
+        
+        closeAllPopups();
+    };
+
+    const handleEditAvatarSubmit = (e) => {
+        e.preventDefault();
+        if (!isEditAvatarValid) return;
+        
+        setCurrentUser({
+            ...currentUser,
+            avatar: editAvatar
+        });
+        
+        closeAllPopups();
+    };
+
+    const handleConfirmDelete = () => {
+        if (!cardToRemove) return;
+        
+        const updatedCards = cards.filter(c => c._id !== cardToRemove._id);
+        setCards(updatedCards);
+        closeAllPopups();
+    };
+
+    return (
+        <main className="content">
+            <Profile 
+                user={currentUser}
+                onEditAvatar={handleEditAvatarClick}
+                onEditProfile={handleEditProfileClick}
+                onAddCard={handleAddCardClick}
+            />
+            
+            <ul className="cards__list">
+                {cards.map((card) => (
+                    <Card 
+                        key={card._id}
+                        card={card}
+                        onImageClick={() => handleImageClick(card)}
+                        onDeleteClick={() => handleDeleteClick(card)}
+                    />
+                ))}
+            </ul>
+
+            {/* ===== POPUP: Nueva Tarjeta ===== */}
+            {activePopup === 'newCard' && (
+                <Popup isOpen={true} onClose={closeAllPopups}>
+                    <Form
+                        title="Nuevo lugar"
+                        name="card-form"
+                        id="new-card-form"
+                        onSubmit={handleNewCardSubmit}
+                        buttonText="Crear"
+                        isValid={isNewCardValid}
+                    >
+                        <NewCard 
+                            onTitleChange={(e) => setNewCardTitle(e.target.value)}
+                            onLinkChange={(e) => setNewCardLink(e.target.value)}
+                            onValidationChange={setIsNewCardValid}
+                        />
+                    </Form>
+                </Popup>
+            )}
+
+            {/* ===== POPUP: Editar Perfil ===== */}
+            {activePopup === 'editProfile' && (
+                <Popup isOpen={true} onClose={closeAllPopups}>
+                    <Form
+                        title="Editar perfil"
+                        name="profile-form"
+                        id="edit-profile-form"
+                        onSubmit={handleEditProfileSubmit}
+                        buttonText="Guardar"
+                        isValid={isEditProfileValid}
+                    >
+                        <EditProfile 
+                            name={editName}
+                            about={editAbout}
+                            onNameChange={(e) => setEditName(e.target.value)}
+                            onAboutChange={(e) => setEditAbout(e.target.value)}
+                            onValidationChange={setIsEditProfileValid}
+                        />
+                    </Form>
+                </Popup>
+            )}
+
+            {/* ===== POPUP: Editar Avatar ===== */}
+            {activePopup === 'editAvatar' && (
+                <Popup isOpen={true} onClose={closeAllPopups}>
+                    <Form
+                        title="Actualizar foto de perfil"
+                        name="avatar-form"
+                        id="avatar-popup-form"
+                        onSubmit={handleEditAvatarSubmit}
+                        buttonText="Guardar"
+                        isValid={isEditAvatarValid}
+                    >
+                        <EditAvatar 
+                            avatar={editAvatar}
+                            onAvatarChange={(e) => setEditAvatar(e.target.value)}
+                            onValidationChange={setIsEditAvatarValid}
+                        />
+                    </Form>
+                </Popup>
+            )}
+
+            {/* ===== POPUP: Confirmar Eliminación ===== */}
+            {activePopup === 'removeCard' && (
+                <Popup isOpen={true} onClose={closeAllPopups}>
+                    <RemoveCard 
+                        onConfirm={handleConfirmDelete}
+                        onClose={closeAllPopups}
+                    />
+                </Popup>
+            )}
+
+            {/* ===== POPUP: Ver Imagen ===== */}
+            <ImagePopup
+                card={selectedImage}
+                isOpen={activePopup === 'image'}
+                onClose={closeAllPopups}
+            />
+        </main>
+    );
+};
+
+export default Main;
