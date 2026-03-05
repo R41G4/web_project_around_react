@@ -5,8 +5,8 @@ function Profile({ user, onEditAvatar, onEditProfile, onAddCard }) {
             <div className="profile__avatar-container">
                 <img 
                     className="profile__image" 
-                    src={user.avatar} 
-                    alt={user.name}
+                    src={user?.avatar} 
+                    alt={user?.name}
                 />
                 <button 
                     aria-label="Cambiar foto de perfil" 
@@ -17,14 +17,14 @@ function Profile({ user, onEditAvatar, onEditProfile, onAddCard }) {
             </div>
             
             <div className="profile__info">
-                <h1 className="profile__title">{user.name}</h1>
+                <h1 className="profile__title">{user?.name}</h1>
                 <button 
                     aria-label="Editar perfil" 
                     className="profile__edit-button" 
                     type="button"
-                    onClick={onEditProfile}  // ← CONECTAR
+                    onClick={onEditProfile}
                 />
-                <p className="profile__description">{user.about}</p>
+                <p className="profile__description">{user?.about}</p>
             </div>
             
             <button 

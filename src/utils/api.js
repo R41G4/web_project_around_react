@@ -67,11 +67,12 @@ class Api {
         }
     }
 
-    updateAvatar(avatarUrl) {
-        return fetch(`${this._baseUrl}/users/me/avatar`, {
+    // src/utils/api.js - agregar método updateUserInfo si no está
+    updateUserInfo({ name, about }) {
+        return fetch(`${this._baseUrl}/users/me`, {
             method: 'PATCH',
             headers: this._headers,
-            body: JSON.stringify({ avatar: avatarUrl })
+            body: JSON.stringify({ name, about })
         }).then(this._checkResponse);
     }
 }
