@@ -1,4 +1,3 @@
-// src/components/Main/Form/EditAvatar/EditAvatar.jsx
 import { useContext, useRef, useState, useEffect } from "react";
 import { CurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { isValidUrl } from "../../../../utils/validators";

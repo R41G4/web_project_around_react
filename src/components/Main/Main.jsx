@@ -1,4 +1,3 @@
-// src/components/Main/Main.jsx
 import { useState, useEffect, useContext } from "react";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
 import api from "../../utils/api";
@@ -50,7 +49,7 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
                     setEditAbout(currentUser.about);
                 }
                 
-                console.log("✅ Tarjetas cargadas:", cardsWithIsLiked);
+                //console.log("Tarjetas cargadas:", cardsWithIsLiked);
             } catch (error) {
                 console.error("Error al cargar tarjetas:", error);
             }

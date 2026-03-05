@@ -1,4 +1,3 @@
-// components/Main/Form/NewCard/NewCard.jsx
 import { useState, useEffect } from "react";
 import { isValidUrl } from "../../../utils/validators";
 

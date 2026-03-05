@@ -1,4 +1,3 @@
-// src/components/App.jsx
 import { useState, useEffect } from "react";
 import Header from "./components/Header/Header"
 import Main from "./components/Main/Main"
@@ -51,7 +50,7 @@ function App() {
         <CurrentUserContext.Provider value={{ 
             currentUser, 
             handleUpdateUser,
-            handleUpdateAvatar  // ← AÑADIR AL CONTEXTO
+            handleUpdateAvatar
         }}>
             <div className="page__content">
                 <Header />

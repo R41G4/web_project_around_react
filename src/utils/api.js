@@ -1,4 +1,3 @@
-// src/utils/api.js
 class Api {
     constructor() {
         this._baseUrl = 'https://around-api.es.tripleten-services.com/v1';
@@ -57,17 +56,14 @@ class Api {
         }).then(this._checkResponse);
     }
 
-    // ===== MÉTODO CORREGIDO =====
     changeLikeCardStatus(cardId, isCurrentlyLiked) {
-        // Si está likeado actualmente, hay que quitar el like
-        if (isCurrentlyLiked) {
+        if (isCurrentlyLiked)
             return this.removeLike(cardId);
-        } else {
+        else {
             return this.addLike(cardId);
         }
     }
 
-    // src/utils/api.js - agregar método updateUserInfo si no está
     updateUserInfo({ name, about }) {
         return fetch(`${this._baseUrl}/users/me`, {
             method: 'PATCH',

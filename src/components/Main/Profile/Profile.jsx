@@ -1,4 +1,3 @@
-// components/Main/Profile/Profile.jsx
 function Profile({ user, onEditAvatar, onEditProfile, onAddCard }) {
     return (
         <section className="profile page__section">

@@ -1,4 +1,3 @@
-// components/ImagePopup/ImagePopup.jsx
 function ImagePopup({ card, isOpen, onClose })
 {
 	return (
