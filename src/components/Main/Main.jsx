@@ -34,15 +34,11 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
     const [editAbout, setEditAbout] = useState("");
     const [isEditProfileValid, setIsEditProfileValid] = useState(false);
 
-    const [editAvatar, setEditAvatar] = useState("");
-    const [isEditAvatarValid, setIsEditAvatarValid] = useState(false);
-
     // ===== CARGAR TARJETAS DESDE API =====
     useEffect(() => {
         const fetchCards = async () => {
             try {
                 const cardsData = await api.getInitialCards();
-                // Asegurar que cada tarjeta tenga isLiked
                 const cardsWithIsLiked = cardsData.map(card => ({
                     ...card,
                     isLiked: card.isLiked || false
@@ -65,7 +61,7 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
         }
     }, [currentUser]);
 
-    // ===== HANDLERS DE APERTURA (usan props de App) =====
+    // ===== HANDLERS DE APERTURA =====
     const handleImageClick = (image) => {
         setSelectedImage(image);
         onOpenPopup('image');
@@ -86,8 +82,6 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
     };
 
     const handleEditAvatarClick = () => {
-        setEditAvatar("");
-        setIsEditAvatarValid(false);
         onOpenPopup('editAvatar');
     };
 
@@ -119,7 +113,7 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
         setIsNewCardValid(false);
     };
 
-    // ===== HANDLERS DE ENVÍO =====
+    // ===== HANDLER PARA NUEVA TARJETA =====
     const handleNewCardSubmit = (e) => {
         e.preventDefault();
         if (!isNewCardValid) return;
@@ -136,24 +130,6 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
         closeAllPopups();
     };
 
-    const handleEditProfileSubmit = (e) => {
-        e.preventDefault();
-        if (!isEditProfileValid) return;
-        // Este submit ahora lo maneja EditProfile directamente
-        closeAllPopups();
-    };
-
-    const handleEditAvatarSubmit = (e) => {
-        e.preventDefault();
-        if (!isEditAvatarValid) return;
-        closeAllPopups();
-    };
-
-    const handleConfirmDelete = () => {
-        if (!cardToRemove) return;
-        handleCardDelete(cardToRemove);
-    };
-
     // ===== HANDLER PARA LIKES =====
     async function handleCardLike(card) {
         try {
@@ -165,6 +141,12 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
             console.error("Error al dar like:", error);
         }
     }
+
+    // ===== HANDLER PARA CONFIRMAR ELIMINACIÓN =====
+    const handleConfirmDelete = () => {
+        if (!cardToRemove) return;
+        handleCardDelete(cardToRemove);
+    };
 
     // Si no hay usuario, mostrar carga
     if (!currentUser) {
@@ -214,28 +196,15 @@ const Main = ({ activePopup, onOpenPopup, onClosePopup }) => {
 
             {/* ===== POPUP: Editar Perfil ===== */}
             {activePopup === 'editProfile' && (
-				<Popup isOpen={true} onClose={closeAllPopups}>
-					<EditProfile key="edit-profile-unique" />
-				</Popup>
-			)}
+                <Popup isOpen={true} onClose={closeAllPopups}>
+                    <EditProfile />
+                </Popup>
+            )}
 
             {/* ===== POPUP: Editar Avatar ===== */}
             {activePopup === 'editAvatar' && (
                 <Popup isOpen={true} onClose={closeAllPopups}>
-                    <Form
-                        title="Actualizar foto de perfil"
-                        name="avatar-form"
-                        id="avatar-popup-form"
-                        onSubmit={handleEditAvatarSubmit}
-                        buttonText="Guardar"
-                        isValid={isEditAvatarValid}
-                    >
-                        <EditAvatar 
-                            avatar={editAvatar}
-                            onAvatarChange={(e) => setEditAvatar(e.target.value)}
-                            onValidationChange={setIsEditAvatarValid}
-                        />
-                    </Form>
+                    <EditAvatar />
                 </Popup>
             )}
 

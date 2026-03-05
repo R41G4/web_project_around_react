@@ -36,8 +36,23 @@ function App() {
         }
     };
 
+    // ===== NUEVO: HANDLER PARA ACTUALIZAR AVATAR =====
+    const handleUpdateAvatar = async (avatarData) => {
+        try {
+            const newUserData = await api.updateAvatar(avatarData.avatar);
+            setCurrentUser(newUserData);
+            handleClosePopup();
+        } catch (error) {
+            console.error("Error al actualizar avatar:", error);
+        }
+    };
+
     return (
-        <CurrentUserContext.Provider value={{ currentUser, handleUpdateUser }}>
+        <CurrentUserContext.Provider value={{ 
+            currentUser, 
+            handleUpdateUser,
+            handleUpdateAvatar  // ← AÑADIR AL CONTEXTO
+        }}>
             <div className="page__content">
                 <Header />
                 <Main 

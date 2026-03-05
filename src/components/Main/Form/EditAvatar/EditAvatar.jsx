@@ -1,60 +1,74 @@
-// components/Main/Form/EditAvatar/EditAvatar.jsx
-import { useState, useEffect } from "react";
+// src/components/Main/Form/EditAvatar/EditAvatar.jsx
+import { useContext, useRef, useState, useEffect } from "react";
+import { CurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { isValidUrl } from "../../../../utils/validators";
 
-function EditAvatar({ avatar, onAvatarChange, onValidationChange }) {
-    const [localAvatar, setLocalAvatar] = useState("");
+const EditAvatar = () => {
+    const { handleUpdateAvatar } = useContext(CurrentUserContext);
+    
+    const avatarRef = useRef();
     const [urlError, setUrlError] = useState(false);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-    // Cuando el popup se abre, ignoramos el avatar inicial
+    // Validar cuando cambia el input
     useEffect(() => {
-        if (isInitialLoad) {
-            setLocalAvatar("");
-            setIsInitialLoad(false);
-        }
-    }, [isInitialLoad]);
-
-    // Validar cuando cambia localAvatar y actualizar el estado de validación
-    useEffect(() => {
-        if (localAvatar.trim() === "") {
-            setUrlError(false);
-            onValidationChange?.(false);  // Campo vacío = no válido
-        } else {
-            const isValid = isValidUrl(localAvatar);
-            setUrlError(!isValid);
-            onValidationChange?.(isValid);  // ← Pasar true si es válido
-        }
-    }, [localAvatar, onValidationChange]);
-
-    const handleChange = (e) => {
-        const newValue = e.target.value;
-        setLocalAvatar(newValue);
-        
-        // Crear evento sintético para el padre
-        const syntheticEvent = {
-            target: {
-                value: newValue
+        const checkUrl = () => {
+            const value = avatarRef.current?.value || "";
+            if (value.trim() === "") {
+                setUrlError(false);
+            } else {
+                setUrlError(!isValidUrl(value));
             }
         };
-        onAvatarChange(syntheticEvent);
+
+        // Escuchar cambios en el input manualmente
+        const input = avatarRef.current;
+        if (input) {
+            input.addEventListener('input', checkUrl);
+            return () => input.removeEventListener('input', checkUrl);
+        }
+    }, []);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        const avatar = avatarRef.current?.value || "";
+        
+        if (avatar && !urlError && isValidUrl(avatar)) {
+            handleUpdateAvatar({ avatar });
+            avatarRef.current.value = ""; // Limpiar después de enviar
+            setUrlError(false);
+        }
     };
 
     return (
-        <div className="popup__input-container">
-            <input
-                className={`popup__input popup__input_type_avatar-url ${urlError ? 'popup__input_type_error' : ''}`}
-                placeholder="Ingresa un enlace de imagen válido para tu avatar"
-                type="url"
-                value={localAvatar}
-                onChange={handleChange}
-                required
-            />
-            <span className={`popup__error ${urlError ? 'popup__error_visible' : ''}`}>
-                {urlError ? 'URL no válida' : ''}
-            </span>
-        </div>
+        <form 
+            className="popup__form" 
+            id="avatar-form" 
+            noValidate
+            onSubmit={handleSubmit}
+        >
+            <div className="popup__input-container">
+                <input
+                    className={`popup__input popup__input_type_avatar-url ${urlError ? 'popup__input_type_error' : ''}`}
+                    placeholder="Ingresa un enlace de imagen válido para tu avatar"
+                    type="url"
+                    ref={avatarRef}
+                    required
+                />
+                <span className={`popup__error ${urlError ? 'popup__error_visible' : ''}`}>
+                    {urlError ? 'URL no válida' : ''}
+                </span>
+            </div>
+            
+            <button 
+                className="popup__button" 
+                type="submit"
+                disabled={urlError}
+            >
+                Guardar
+            </button>
+        </form>
     );
-}
+};
 
 export default EditAvatar;
