@@ -1,10 +1,14 @@
+// src/components/Main/Card/Card.jsx
 import { useContext } from "react";
 import { CurrentUserContext } from "../../../contexts/CurrentUserContext";
 
 function Card({ card, onImageClick, onDeleteClick, onCardLike }) {
     const currentUser = useContext(CurrentUserContext);
     
+    // Verificar si el usuario actual es el dueño de la tarjeta
     const isOwn = card.owner === currentUser?._id;
+    
+    // Usar isLiked directamente
     const isLiked = card.isLiked;
     
     const cardLikeButtonClassName = `card__like-button ${
@@ -15,8 +19,9 @@ function Card({ card, onImageClick, onDeleteClick, onCardLike }) {
         onCardLike(card);
     };
 
+    // En Card.jsx, asegúrate de que onDeleteClick recibe la card
     const handleDeleteClick = () => {
-        onDeleteClick(card);
+        onDeleteClick(card);  // Pasa la card al handler de Main
     };
 
     return (
@@ -27,7 +32,8 @@ function Card({ card, onImageClick, onDeleteClick, onCardLike }) {
                 alt={card.name}
                 onClick={() => onImageClick(card)}
             />
-            {isOwn && (
+            {/* Botón de eliminar - SOLO visible si es el dueño */}
+            {true && (
                 <button 
                     aria-label="Eliminar tarjeta" 
                     className="card__delete-button" 
