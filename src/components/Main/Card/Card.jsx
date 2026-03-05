@@ -1,12 +1,23 @@
-// components/Main/Card/Card.jsx
-import { useState } from "react";
+// src/components/Main/Card/Card.jsx
+import { useContext } from "react";
+import { CurrentUserContext } from "../../../contexts/CurrentUserContext";
 
-function Card({ card, onImageClick, onDeleteClick }) {
-    const [isLiked, setIsLiked] = useState(false);
+function Card({ card, onImageClick, onDeleteClick, onCardLike }) {
+    const currentUser = useContext(CurrentUserContext);
+    
+    const isOwn = card.owner === currentUser?._id;
+    const isLiked = card.isLiked;
+    
+    const cardLikeButtonClassName = `card__like-button ${
+        isLiked ? 'card__like-button_is-active' : ''
+    }`;
 
     const handleLikeClick = () => {
-        setIsLiked(!isLiked);
-        // Aquí después iría la lógica para guardar el like en el servidor
+        onCardLike(card);
+    };
+
+    const handleDeleteClick = () => {
+        onDeleteClick(card);
     };
 
     return (
@@ -15,24 +26,25 @@ function Card({ card, onImageClick, onDeleteClick }) {
                 className="card__image" 
                 src={card.link} 
                 alt={card.name}
-                onClick={onImageClick}
+                onClick={() => onImageClick(card)}
             />
-            <button 
-                aria-label="Eliminar tarjeta" 
-                className="card__delete-button" 
-                type="button"
-                onClick={onDeleteClick}
-            />
+            {isOwn && (
+                <button 
+                    aria-label="Eliminar tarjeta" 
+                    className="card__delete-button" 
+                    type="button"
+                    onClick={handleDeleteClick}
+                />
+            )}
             <div className="card__description">
                 <h2 className="card__title">{card.name}</h2>
                 <div className="card__like-container">
                     <button 
                         aria-label="Me gusta" 
-                        className={`card__like-button ${isLiked ? "card__like-button_is-active" : ""}`}
+                        className={cardLikeButtonClassName}
                         type="button"
                         onClick={handleLikeClick}
                     />
-                    {/* Contador eliminado */}
                 </div>
             </div>
         </li>
