@@ -8,9 +8,9 @@ import api from "../utils/api";
 function App() {
     const [currentUser, setCurrentUser] = useState(null);
     const [activePopup, setActivePopup] = useState(null);
-    const [cards, setCards] = useState([]);
+    const [cards, setCards] = useState([]); // ← VACÍO, sin datos de prueba
 
-    // ===== CARGAR DATOS EN ORDEN =====
+    // ===== CARGAR DATOS DESDE API =====
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -18,8 +18,9 @@ function App() {
                 const userData = await api.getUserInfo();
                 setCurrentUser(userData);
                 
-                // 2. Luego cargar tarjetas (cuando ya tenemos usuario)
+                // 2. Luego cargar tarjetas
                 const cardsData = await api.getInitialCards();
+                // Asegurar estructura correcta
                 const cardsWithIsLiked = cardsData.map(card => ({
                     ...card,
                     isLiked: card.isLiked || false
@@ -27,7 +28,7 @@ function App() {
                 setCards(cardsWithIsLiked);
                 
                 console.log("✅ Usuario cargado:", userData);
-                console.log("✅ Tarjetas cargadas:", cardsWithIsLiked);
+                console.log("✅ Tarjetas cargadas del servidor:", cardsWithIsLiked);
             } catch (error) {
                 console.error("Error al cargar datos:", error);
             }
@@ -50,25 +51,37 @@ function App() {
 
     // ===== HANDLER PARA ELIMINAR TARJETA =====
     const handleCardDelete = async (card) => {
-    try {
-        await api.deleteCard(card._id);
-        setCards((state) => state.filter((c) => c._id !== card._id));
-    } catch (error) {
-        console.error("Error al eliminar tarjeta:", error);
-    }
-};
+        try {
+            await api.deleteCard(card._id);
+            setCards((state) => state.filter((currentCard) => 
+                currentCard._id !== card._id
+            ));
+        } catch (error) {
+            console.error("Error al eliminar tarjeta:", error);
+        }
+    };
 
-    // ===== HANDLER PARA AGREGAR TARJETA =====
+    // ===== HANDLER PARA AGREGAR TARJETA (CORREGIDO) =====
     const handleAddPlaceSubmit = async (newCardData) => {
         try {
-            const newCard = await api.addNewCard({
+            console.log("📤 Enviando nueva tarjeta al servidor:", newCardData);
+            
+            // 1. Enviar a la API
+            const newCardFromServer = await api.addNewCard({
                 name: newCardData.name,
                 link: newCardData.link
             });
-            setCards([newCard, ...cards]);
+            
+            console.log("✅ Tarjeta creada en servidor:", newCardFromServer);
+            
+            // 2. Actualizar estado local con la tarjeta del servidor
+            setCards([newCardFromServer, ...cards]);
+            
+            // 3. Cerrar popup
             handleClosePopup();
+            
         } catch (error) {
-            console.error("Error al agregar tarjeta:", error);
+            console.error("❌ Error al agregar tarjeta:", error);
         }
     };
 
@@ -93,8 +106,6 @@ function App() {
             console.error("Error al actualizar avatar:", error);
         }
     };
-
-	
 
     // ===== HANDLERS DE POPUPS =====
     const handleOpenPopup = (popupName) => {
