@@ -1,0 +1,26 @@
+[
+  {
+    "isLiked": false,
+    "_id": "69ab073552bbb80019618691",
+    "name": "Bariloche",
+    "link": "https://static.wixstatic.com/media/042c65_056b0df7962541dca606e721ab886b7c~mv2.jpg/v1/fill/w_670,h_502,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/042c65_056b0df7962541dca606e721ab886b7c~mv2.jpg",
+    "owner": "115768dfadaa3aa21b79ad46",
+    "createdAt": "2026-03-06T16:56:21.139Z"
+  },
+  {
+    "isLiked": false,
+    "_id": "693bf52a9910450019e010ba",
+    "name": "Cancún",
+    "link": "https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/06/75/bc/3d.jpg",
+    "owner": "115768dfadaa3aa21b79ad46",
+    "createdAt": "2025-12-12T10:57:46.378Z"
+  },
+  {
+    "isLiked": false,
+    "_id": "693beee59910450019e01026",
+    "name": "Valle de Yosemite",
+    "link": "https://practicum-content.s3.us-west-1.amazonaws.com/web-code/moved_yosemite.jpg",
+    "owner": "115768dfadaa3aa21b79ad46",
+    "createdAt": "2025-12-12T10:31:01.530Z"
+  }
+]
